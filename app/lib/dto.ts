@@ -1,5 +1,6 @@
 import 'server-only'
 import { getUser } from '@/app/lib/dal'
+import { User } from './definitions'
  
 function canSeeUsername(viewer: User) {
   return true

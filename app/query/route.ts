@@ -1,9 +1,7 @@
-import postgres from 'postgres';
-
-const sql = postgres(process.env.POSTGRES_URL!, { ssl: 'require' });
+import db from "../lib/db";
 
 async function listInvoices() {
-	const data = await sql`
+	const data = await db`
     SELECT invoices.amount, customers.name
     FROM invoices
     JOIN customers ON invoices.customer_id = customers.id

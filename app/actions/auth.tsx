@@ -1,8 +1,9 @@
 import { LoginFormSchema, FormState } from '@/app/lib/definitions'
 import { createSession, deleteSession } from '../lib/session';
-import { redirect } from 'next/dist/server/api-utils';
+import bcrypt from 'bcryptjs';
+import db from '@/app/lib/db';
+import { redirect } from 'next/navigation';
 
- 
 export async function login(state: FormState, formData: FormData) {
     // Validate form fields
     const validatedFields = LoginFormSchema.safeParse({
@@ -19,28 +20,30 @@ export async function login(state: FormState, formData: FormData) {
 
     //Insert the user into the database or call an Library API
     const { email, password } = validatedFields.data;
-    const hashedPassword = await bcrypt.hash(password, 10);
-    const data = await db
-    .insert(user)
-    .values({
-        email,
-        password: hashedPassword,
-    })
-    .returning({ id: user.id });
-
-    //Create user session
-    await createSession(user.id)
+    const user = await db`
+    SELECT * FROM users
+    WHERE email='${email}' LIMIT 1
+    `;
 
     // If any form fields are invalid, return early
-    if (!user) {
+    if (!user.length) {
         return {
-            message: 'An error occurred while creating your account.',
+            message: 'Invalid email or password.',
         }
     }
- 
-  // Call the provider or db to create a user...
-  //Redirect user
-  redirect('/dashboard');
+
+    // const hashedPassword = await bcrypt.hash(password, 10);
+    const passwordMatch = await bcrypt.compare(password, user[0].password);
+
+    if (!passwordMatch) {
+        return {
+            message: 'Invalid email or password.',
+        };
+    }
+
+    //Create user session
+    await createSession(user[0].id);
+    redirect('/dashboard');
 }
 
 export async function logout() {
