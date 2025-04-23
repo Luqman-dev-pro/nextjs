@@ -254,7 +254,6 @@ export async function fetchFilteredRevenue(
       revenue::text ILIKE ${`%${query}%`} 
     LIMIT ${ITEMS_PER_PAGE} OFFSET ${offset}
 	  `;
-console.log("data",data);
     const revenues = data.map((revenue) => ({
       ...revenue
     }));
