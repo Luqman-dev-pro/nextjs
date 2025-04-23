@@ -18,10 +18,11 @@ export const LoginFormSchema = z.object({
     .trim(),
 });
 
-export interface SessionPayload {
+export type SessionPayload = {
   userId: string;
-  email: string;
-  name: string;
+  // email: string;
+  // name: string;
+  expiresAt: string;
 }
 
 export type FormState =
