@@ -234,7 +234,51 @@ export async function fetchCustomersPages(query: string) {
     return totalPages;
   } catch (error) {
     console.error('Database Error:', error);
-    throw new Error('Failed to fetch total number of invoices.');
+    throw new Error('Failed to fetch total number of customers.');
   }
 }
 
+export async function fetchFilteredRevenue(
+  query: string,
+  currentPage: number,
+) {
+  const offset = (currentPage - 1) * ITEMS_PER_PAGE;
+
+  try {
+    const data = await db<Revenue[]>`
+		SELECT
+		  *
+		FROM revenue
+		WHERE
+		  month ILIKE ${`%${query}%`} OR
+      revenue::text ILIKE ${`%${query}%`} 
+    LIMIT ${ITEMS_PER_PAGE} OFFSET ${offset}
+	  `;
+console.log("data",data);
+    const revenues = data.map((revenue) => ({
+      ...revenue
+    }));
+
+    return revenues;
+  } catch (err) {
+    console.error('Database Error:', err);
+    throw new Error('Failed to fetch customer table.');
+  }
+}
+
+export async function fetchRevenuesPages(query: string) {
+  try {
+    const data = await db`SELECT COUNT(*)
+    FROM revenue 
+    WHERE 
+      month ILIKE ${`%${query}%`} OR
+      revenue::text ILIKE ${`%${query}%`}
+  `;
+
+    const totalPages = Math.ceil(Number(data[0].count) / ITEMS_PER_PAGE);
+    return totalPages;
+  } catch (error) {
+    console.error('Database Error:', error);
+    throw new Error('Failed to fetch total number of revenues.');
+  }
+}
