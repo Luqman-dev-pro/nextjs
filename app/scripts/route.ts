@@ -59,7 +59,16 @@ async function initDB() {
       quantity INT,
       price FLOAT
     );
-  `
+  `;
+
+  await db`
+    CREATE TABLE IF NOT EXISTS sessions (
+      token TEXT PRIMARY KEY,
+      user_id UUID REFERENCES customers(id),
+      user_type TEXT,
+      created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+    );
+  `;
 
   console.log('✅ Database schema created.')
   process.exit()

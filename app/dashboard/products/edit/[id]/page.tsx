@@ -3,8 +3,11 @@
 import db from "@/app/lib/db";
 import { Product } from "@/models/Product";
 import { updateProduct } from "./actions";
+import { Category } from "@/models/Category";
 
 export default async function EditProductPage({ params }: { params: { id: string } }) {
+  const categories: Category[] = await db<Category[]>`SELECT id, name FROM categories`;
+
   const [product] = await db<Product[]>`
     SELECT id, name, slug, description, price, stock, image_url, category_id
     FROM products
@@ -65,6 +68,18 @@ export default async function EditProductPage({ params }: { params: { id: string
         defaultValue={product.category_id || ""}
         className="border p-2 rounded"
       />
+
+      <select
+            name="category_id"
+            className="border p-2 rounded"
+          >
+            <option disabled value=''>
+              Select Category
+            </option>
+            {categories.map((cat) => (
+              <option key={cat.id} value={cat.id} selected={product.category_id == cat.id || false}>{cat.name}</option>
+            ))}
+        </select>
       <button type="submit" className="bg-blue-600 text-white px-4 py-2 rounded">
         Update
       </button>

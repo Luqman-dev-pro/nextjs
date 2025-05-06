@@ -1,8 +1,12 @@
-"use client";
+// "use client";
 
 import { createProduct } from "./actions";
+import db from "@/app/lib/db";
+import { Category } from "@/models/Category";
 
-export default function NewProductPage() {
+export default async function NewProductPage() {
+  const categories: Category[] = await db<Category[]>`SELECT id, name FROM categories`;
+  
   return (
     <form action={createProduct} className="p-8 flex flex-col gap-4">
       <h1 className="text-2xl font-bold mb-4">Create Product</h1>
@@ -47,12 +51,17 @@ export default function NewProductPage() {
         placeholder="Image URL"
         className="border p-2 rounded"
       />
-      <input
-        type="text"
+      <select
         name="category_id"
-        placeholder="Category ID"
         className="border p-2 rounded"
-      />
+      >
+        <option value=''>
+          Select Category
+        </option>
+        {categories.map((cat) => (
+          <option key={cat.id} value={cat.id}>{cat.name}</option>
+        ))}
+       </select>
       <button type="submit" className="bg-blue-600 text-white px-4 py-2 rounded">
         Create
       </button>

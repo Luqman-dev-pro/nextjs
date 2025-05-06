@@ -1,23 +1,26 @@
-// /app/checkout/page.tsx
+import { getCartItems } from "@/app/lib/cart";
+import PlaceOrderForm from "@/components/PlaceOrderForm";
+import { redirect } from "next/navigation";
 
-import { getCart, clearCart } from "@/lib/cart";
+export default async function CheckoutPage() {
+  const cartItems = await getCartItems();
 
-export default function CheckoutPage() {
-  const cart = getCart();
-  const total = cart.reduce((sum, item) => sum + item.product.price * item.quantity, 0);
+  if (cartItems.length === 0) {
+    redirect("/cart");
+  }
 
-  const handleCheckout = () => {
-    clearCart();
-    alert("Order placed successfully!");
-  };
+  const total = cartItems.reduce(
+    (sum, item) => sum + item.product.price * item.quantity,
+    0
+  );
 
   return (
-    <div className="p-8">
-      <h1 className="text-2xl font-bold mb-4">Checkout</h1>
-      <p>Total: ${total.toFixed(2)}</p>
-      <button onClick={handleCheckout} className="mt-4 bg-green-600 text-white px-4 py-2 rounded">
-        Confirm Order
-      </button>
+    <div className="max-w-3xl mx-auto p-6 space-y-8">
+      <h1 className="text-3xl font-bold">Checkout</h1>
+
+      <div className="bg-white p-6 rounded shadow space-y-4">
+        <PlaceOrderForm total={total} cartItems={cartItems} />
+      </div>
     </div>
   );
 }

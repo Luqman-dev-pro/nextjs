@@ -1,5 +1,5 @@
 // /models/Customer.ts
-export interface Customer {
+export interface Customers {
     id: string; // UUID
     email: string;
     name?: string;

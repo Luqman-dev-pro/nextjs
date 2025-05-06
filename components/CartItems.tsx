@@ -1,26 +1,28 @@
-// /app/cart/page.tsx
-
-import Link from "next/link";
-import { getCartItems } from "@/app/lib/cart";
+// import { getCartItems } from "@/app/lib/cart";
 import { TrashIcon } from "@heroicons/react/24/outline";
+import Link from "next/link";
 
-export default async function CartPage() {
-  const cartItems = await getCartItems();
+type Props = {
+    total: number;
+    cartItems: {
+      product: {
+        id: string;
+        name: string;
+        price: number;
+        image_url: string;
+      };
+      quantity: number;
+    }[];
+  };
 
-  const total = cartItems.reduce((sum, item) => sum + item.product.price * item.quantity, 0);
+  
+export default async function CartItemsGrid({total, cartItems} : Props) {
+    // const cartItems = await getCartItems();
+    // const total = cartItems.reduce((sum, item) => sum + item.product.price * item.quantity, 0);
 
-  return (
-    <div className="max-w-5xl mx-auto p-6 space-y-10">
-      <h1 className="text-3xl font-bold">Your Cart</h1>
-
-      {cartItems.length === 0 ? (
-        <div className="text-center text-gray-500">
-          Your cart is empty.
-          <Link href="/" className="text-blue-600 ml-2 underline">
-            Go shopping →
-          </Link>
-        </div>
-      ) : (
+return (
+<div className="max-w-5xl mx-auto p-6 space-y-10">
+      <h1 className="text-3xl font-bold">Order Items</h1>
         <>
           <div className="space-y-4">
             {cartItems.map((item) => (
@@ -52,7 +54,7 @@ export default async function CartPage() {
                   </form>
                   <form action="/api/cart/remove" method="POST">
                     <input type="hidden" name="productId" value={item.product.id} />
-                    <button className="text-red-500 text-sm ml-3"><TrashIcon className="h-5 w-5 text-red-500" /></button>
+                    <button className="text-sm ml-3"><TrashIcon className="h-5 w-5 text-red-500" /></button>
                   </form>
                 </div>
               </div>
@@ -63,17 +65,7 @@ export default async function CartPage() {
             <span>Total:</span>
             <span>${total.toFixed(2)}</span>
           </div>
-
-          <div className="mt-6 text-right">
-            <Link
-              href="/checkout"
-              className="bg-blue-600 text-white px-6 py-3 rounded hover:bg-blue-700"
-            >
-              Proceed to Checkout →
-            </Link>
-          </div>
         </>
-      )}
     </div>
-  );
+);
 }
