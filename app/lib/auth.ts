@@ -28,3 +28,11 @@ export async function createSession(user: { id: string; email: string; type: "cu
     ON CONFLICT DO NOTHING
   `;
 }
+
+export async function createSessionDB(user: { id: string; email: string; type: "customer" | "admin" }, token: any) {
+  await db`
+    INSERT INTO sessions (token, user_id, user_type)
+    VALUES (${token}, ${user.id}, ${user.type})
+    ON CONFLICT DO NOTHING
+  `;
+}

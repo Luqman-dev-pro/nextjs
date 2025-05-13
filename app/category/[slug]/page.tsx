@@ -3,18 +3,17 @@
 import db from "@/app/lib/db";
 import { notFound } from "next/navigation";
 import AddToCartButton from "@/components/AddToCartButton";
-import { Product } from "@/models/Product";
 import { Category } from "@/models/Category";
 import Link from "next/link";
+import { getProductByCategoryIDFromDB } from "@/app/lib/products";
+import { getCategoryBySlugFromDB } from "@/app/lib/categories";
 
 export default async function CategoryBasedProductDetailPage({ params }: { params: { slug: string } }) {
-  const [category] = await db<Category[]>`SELECT id, name FROM categories WHERE slug = ${params.slug}`;
+  const category = await getCategoryBySlugFromDB(params.slug);
 
-  const products = await db<Product[]>`
-    SELECT id, name, slug, description, price, stock, image_url, category_id
-    FROM products
-    WHERE category_id = ${category.id}
-  `;
+  if (!category) return notFound();
+
+  const products = await getProductByCategoryIDFromDB(category.id);
 
   if (!products) return notFound();
 

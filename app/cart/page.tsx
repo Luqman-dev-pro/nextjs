@@ -17,7 +17,7 @@ export default async function CartPage() {
         <div className="text-center text-gray-500">
           Your cart is empty.
           <Link href="/" className="text-blue-600 ml-2 underline">
-            Go shopping →
+            Go back to shopping
           </Link>
         </div>
       ) : (

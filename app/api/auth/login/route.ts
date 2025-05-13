@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import db from "@/app/lib/db";
-import { comparePassword, createSession } from "@/app/lib/auth";
+import { comparePassword, createSessionDB } from "@/app/lib/auth";
+import jwt from 'jsonwebtoken';
 
 export async function POST(req: Request) {
   const { email, password } = await req.json();
@@ -17,7 +18,13 @@ export async function POST(req: Request) {
     return NextResponse.json({ message: "Invalid credentials" }, { status: 401 });
   }
 
-  await createSession({ id: customer.id, email: customer.email, type: "customer" });
+  const SECRET = process.env.JWT_SECRET!; 
+  const token = jwt.sign({ id: customer.id }, SECRET, { expiresIn: '7d' });
+  await createSessionDB({ id: customer.id, email: customer.email, type: "customer"}, token);
 
-  return NextResponse.json({ success: true });
+  return NextResponse.json({ success: true, token });
+
+  // 
+
+  // return NextResponse.json({ success: true });
 }

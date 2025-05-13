@@ -1,12 +1,13 @@
-import { cookies } from "next/headers";
-import db from "@/app/lib/db";
+import jwt from 'jsonwebtoken'
+import db from '@/app/lib/db'
 
-export async function getCustomerFromSession() {
-  const token = cookies().get("session")?.value;
-  if (!token) return null;
-
-  const [session] = await db`
-    SELECT user_id FROM sessions WHERE token = ${token} AND user_type = 'customer'
-  `;
-  return session ? { id: session.user_id } : null;
+export async function getCustomerFromToken(token: string | null) {
+  if (!token) return null
+  try {
+    const decoded = jwt.verify(token, process.env.JWT_SECRET!) as { id: string }
+    const [customer] = await db`SELECT id, name, email FROM customers WHERE id = ${decoded.id}`
+    return customer || null
+  } catch {
+    return null
+  }
 }

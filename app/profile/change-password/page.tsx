@@ -20,10 +20,15 @@ export default function ChangePasswordPage() {
       setError("Passwords do not match");
       return;
     }
-
+    const token = localStorage.getItem("token");
+    
     const res = await fetch("/api/profile/change-password", {
       method: "POST",
       body: JSON.stringify(form),
+      headers: {
+        Authorization: `Bearer ${token}`,
+        "Content-Type": "application/json"
+      },
     });
 
     const data = await res.json();
@@ -36,7 +41,7 @@ export default function ChangePasswordPage() {
   };
 
   return (
-    <div className="max-w-md mx-auto mt-10 bg-white p-8 rounded shadow">
+    <div className="max-w-md mx-auto mt-10 bg-white p-8 rounded shadow custom-bg-style">
       <h2 className="text-xl font-bold mb-4">Change Password</h2>
 
       {error && <p className="text-red-600 mb-4">{error}</p>}

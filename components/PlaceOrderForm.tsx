@@ -11,7 +11,7 @@ type Props = {
       id: string;
       name: string;
       price: number;
-    //   image_url: string;
+      // image_url: string;
     };
     quantity: number;
   }[];
@@ -39,9 +39,14 @@ export default function PlaceOrderForm({ total, cartItems }: Props) {
       cartItems,
     };
 
+    const token = localStorage.getItem("token");
     const res = await fetch("/api/checkout", {
       method: "POST",
       body: JSON.stringify(payload),
+      headers: {
+        Authorization: `Bearer ${token}`,
+        "Content-Type": "application/json"
+      },
     });
 
     if (res.ok) {
@@ -55,16 +60,14 @@ export default function PlaceOrderForm({ total, cartItems }: Props) {
   return (
     <form onSubmit={handleSubmit} className="space-y-4">
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-        <input name="firstName" placeholder="First Name" required className="input" />
-        <input name="lastName" placeholder="Last Name" required className="input" />
+        <input name="firstName" placeholder="First Name" type="text" required className="input" />
+        <input name="lastName" placeholder="Last Name" type="text" required className="input" />
         <input name="email" placeholder="Email" type="email" required className="input" />
-        <input name="mobile" placeholder="Mobile" required className="input" />
-        <input name="address" placeholder="Address Line" required className="input col-span-2" />
-        <input name="city" placeholder="City" required className="input" />
-        <input name="zip" placeholder="ZIP Code" required className="input" />
+        <input name="mobile" placeholder="Mobile" type="text" required className="input" />
+        <input name="address" placeholder="Address Line" type="text" required className="input col-span-2" />
+        <input name="city" placeholder="City" type="text" required className="input" />
+        <input name="zip" placeholder="ZIP Code" type="text" required className="input" />
       </div>
-
-      {/* <CartItemsGrid total={total} cartItems={cartItems} /> */}
 
       <div className="mt-6 border-t pt-4">
         <p className="text-lg font-semibold mb-2">Payment Method</p>

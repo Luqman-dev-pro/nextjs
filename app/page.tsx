@@ -1,21 +1,12 @@
 // app/page.tsx
 import Link from "next/link";
-import db from "@/app/lib/db";
+import { getAllProductFromDB, getFeaturedProductFromDB } from "./lib/products";
+import { getAllCategoriesFromDB } from "./lib/categories";
 
 export default async function HomePage() {
-  const categories = await db`SELECT id, name, slug FROM categories ORDER BY name ASC`;
-  const featuredProducts = await db`
-    SELECT id, name, slug, image_url, price
-    FROM products
-    ORDER BY created_at DESC
-    LIMIT 4
-  `;
-
-  const allProducts = await db`
-    SELECT id, name, slug, image_url, price
-    FROM products
-    ORDER BY name ASC
-  `;
+  const categories = await getAllCategoriesFromDB();
+  const featuredProducts = await getFeaturedProductFromDB();
+  const allProducts = await getAllProductFromDB();
 
   return (
     <div className="p-4 md:p-8 space-y-12">

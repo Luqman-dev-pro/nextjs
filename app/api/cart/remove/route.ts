@@ -4,8 +4,9 @@ import { removeFromCart } from "@/app/lib/cart";
 export async function POST(req: NextRequest) {
   const body = await req.formData();
   const productId = body.get("productId")?.toString();
-  if (!productId) return NextResponse.redirect("/cart");
+  const url = new URL("/cart", req.nextUrl.origin);
+  if (!productId) return NextResponse.redirect(url);
 
   removeFromCart(productId);
-  return NextResponse.redirect("/cart");
+  return NextResponse.redirect(url);
 }

@@ -9,9 +9,14 @@ export default function AddToCartButton({ product }: { product: Product }) {
   const handleAdd = async () => {
     setLoading(true);
 
+    const token = localStorage.getItem("token");
     await fetch("/api/cart", {
       method: "POST",
       body: JSON.stringify({ productId: product.id }),
+      headers: {
+        Authorization: `Bearer ${token}`,
+        "Content-Type": "application/json"
+      },
     });
 
     // Dispatch event to open cart drawer

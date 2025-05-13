@@ -1,64 +1,41 @@
 "use client";
 
 import Link from "next/link";
+import UserAvatar from "./UserAvatar"; // client component
+import CartButton from "./CartButton"; // client component
+import AcmeLogo from "@/app/ui/acme-logo";
 import { useEffect, useState } from "react";
-import { usePathname } from "next/navigation";
+import { useRouter } from 'next/navigation'
 
 export default function Header() {
-  const [showDropdown, setShowDropdown] = useState(false);
-  const [avatarUrl, setAvatarUrl] = useState<string | null>(null);
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
+  const router = useRouter();
 
   useEffect(() => {
-    // Load from cookie or API if required
-    fetch("/api/me")
-      .then((res) => res.json())
-      .then((data) => setAvatarUrl(data.image_url))
-      .catch(() => {});
+    // Check token presence on component mount
+    setIsLoggedIn(!!localStorage.getItem("token"));
   }, []);
 
+  const handleLogout = async () => {
+    await fetch("/api/logout", { method: "POST" }); // Call logout API
+    localStorage.removeItem('token')
+    router.push('/login')
+  };
+
+
   return (
-    <header className="flex justify-between items-center p-4 border-b bg-white sticky top-0 z-50">
-      <Link href="/" className="text-xl font-bold text-blue-600">
-        MyStore
-      </Link>
-
+    <header className="flex justify-between items-center px-6 py-4 shadow bg-white sticky top-0 z-50">
+      <Link href="/" className="text-xl font-bold text-blue-600"><AcmeLogo /></Link>
       <nav className="flex items-center gap-6">
-        {/* <Link href="/products" className="hover:text-blue-600">Products</Link> */}
-        <Link href="/cart" className="hover:text-blue-600">Cart</Link>
+      {isLoggedIn ? (
+          <button onClick={handleLogout} className="hover:text-red-600">Logout</button>
+        ) : (
+          <Link href="/login" className="hover:text-blue-600">Login</Link>
+        )}
 
-        <div
-          className="relative"
-          onMouseEnter={() => setShowDropdown(true)}
-          onMouseLeave={() => setShowDropdown(false)}
-        >
-          <div className="w-10 h-10 rounded-full overflow-hidden cursor-pointer border">
-            <img
-              src={avatarUrl || "/customers/lee-robinson.png"}
-              alt="avatar"
-              className="w-full h-full object-cover"
-            />
-          </div>
-
-          {showDropdown && (
-            <div className="absolute right-0 top-10 w-48 bg-white border shadow rounded z-10">
-              <Link
-                href="/profile"
-                className="block px-4 py-2 hover:bg-gray-100"
-              >
-                Profile
-              </Link>
-              <Link href="/profile/change-password" className="block px-4 py-2 hover:bg-gray-100">Change Password</Link>
-              <form action="/api/auth/logout" method="POST">
-                <button
-                  type="submit"
-                  className="w-full text-left px-4 py-2 hover:bg-gray-100"
-                >
-                  Logout
-                </button>
-              </form>
-            </div>
-          )}
-        </div>
+      {/* <Link href="/login" className="hover:text-blue-600">Login</Link> */}
+        <CartButton />
+        <UserAvatar />
       </nav>
     </header>
   );

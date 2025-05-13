@@ -16,3 +16,14 @@ input[type='number']::-webkit-outer-spin-button {
   -webkit-appearance: none;
   margin: 0;
 }
+
+form input[type]{
+  border-color: #d4d4d4;
+  border-radius: 5px;
+}
+
+.custom-bg-style{
+  background: #f2f2f2;
+  border-radius: 8px;
+  border: 1px solid #f2f2f2;
+}

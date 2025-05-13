@@ -1,4 +1,3 @@
-// /lib/cart.ts
 import { cookies } from "next/headers";
 import db from "@/app/lib/db";
 import { Product } from "@/models/Product";
@@ -8,9 +7,8 @@ export type CartItem = {
   quantity: number;
 };
 
-function getRawCart(): CartItem[] {
-  const cookieStore = cookies();
-  const cartRaw = cookieStore.get("cart")?.value;
+export async function getRawCart(): Promise<CartItem[]> {
+  const cartRaw = (await cookies()).get("cart")?.value;
   if (!cartRaw) return [];
   try {
     return JSON.parse(cartRaw) as CartItem[];
@@ -19,43 +17,41 @@ function getRawCart(): CartItem[] {
   }
 }
 
-function saveCart(cart: CartItem[]) {
-  const cookieStore = cookies();
-  cookieStore.set("cart", JSON.stringify(cart), {
+export async function saveCart(cart: CartItem[]) {
+  (await cookies()).set("cart", JSON.stringify(cart), {
     path: "/",
     httpOnly: false,
   });
 }
 
-export function addToCart(productId: string) {
-  const cart = getRawCart();
+export async function addToCart(productId: string) {
+  const cart = await getRawCart();
   const existing = cart.find((item) => item.productId === productId);
   if (existing) existing.quantity += 1;
   else cart.push({ productId, quantity: 1 });
-  saveCart(cart);
+  await saveCart(cart);
 }
 
-export function decFromCart(productId: string) {
-  const cart = getRawCart();
-  const updated = cart
-    .map((item) =>
-      item.productId === productId
-        ? { ...item, quantity: Math.max(item.quantity - 1, 1) }
-        : item
-    );
-  saveCart(updated);
+export async function decFromCart(productId: string) {
+  const cart = await getRawCart();
+  const updated = cart.map((item) =>
+    item.productId === productId
+      ? { ...item, quantity: Math.max(item.quantity - 1, 1) }
+      : item
+  );
+  await saveCart(updated);
 }
 
-export function removeFromCart(productId: string) {
-  const cart = getRawCart();
+export async function removeFromCart(productId: string) {
+  const cart = await getRawCart();
   const updated = cart.filter((item) => item.productId !== productId);
-  saveCart(updated);
+  await saveCart(updated);
 }
 
 export async function getCartItems(): Promise<
   { product: Product; quantity: number }[]
 > {
-  const cart = getRawCart();
+  const cart = await getRawCart();
   if (cart.length === 0) return [];
 
   const ids = cart.map((item) => item.productId);
@@ -70,34 +66,9 @@ export async function getCartItems(): Promise<
   }));
 }
 
-
-
-// // /lib/cart.ts
-
-// import { Product } from "@/models/Product";
-
-// export type CartItem = {
-//   product: Product;
-//   quantity: number;
-// };
-
-// let cart: CartItem[] = [];
-
-// export const addToCart = (product: Product) => {
-//   const item = cart.find((c) => c.product.id === product.id);
-//   if (item) {
-//     item.quantity += 1;
-//   } else {
-//     cart.push({ product, quantity: 1 });
-//   }
-// };
-
-// export const removeFromCart = (productId: string) => {
-//   cart = cart.filter((c) => c.product.id !== productId);
-// };
-
-// export const getCart = () => cart;
-
-// export const clearCart = () => {
-//   cart = [];
-// };
+export async function clearCart() {
+  (await cookies()).set("cart", "", {
+    path: "/",
+    maxAge: 0,
+  });
+}

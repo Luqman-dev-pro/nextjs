@@ -36,12 +36,12 @@ export default function RegisterPage() {
 
   return (
      <main className="flex items-center justify-center md:h-screen">
-              <div className="relative mx-auto flex w-full max-w-[400px] flex-col space-y-2.5 p-4 md:-mt-32">
-                <div className="flex h-20 w-full items-end rounded-lg bg-blue-500 p-3 md:h-36">
+      <div className="relative mx-auto flex w-full max-w-[400px] flex-col space-y-2.5 p-4 md:-mt-32 custom-bg-style shadow">
+                {/* <div className="flex h-20 w-full items-end rounded-lg bg-blue-500 p-3 md:h-36">
                   <div className="w-32 text-white md:w-36">
                     <AcmeLogo />
                   </div>
-                </div>
+                </div> */}
       <h1 className="text-2xl font-bold mb-4">Register</h1>
       {error && <p className="text-red-500 mb-3">{error}</p>}
       <form onSubmit={handleSubmit} className="space-y-4">

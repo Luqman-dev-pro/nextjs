@@ -33,7 +33,7 @@ export async function POST(req: NextRequest) {
     }
 
     // Clear cart
-    cookies().set("cart", "", { path: "/", maxAge: 0 });
+    // cookies().set("cart", "", { path: "/", maxAge: 0 });
 
     return NextResponse.json({ success: true });
   } catch (err) {

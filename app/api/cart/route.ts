@@ -1,6 +1,7 @@
 // /app/api/cart/route.ts
 import { NextResponse } from "next/server";
 import { getCartItems } from "@/app/lib/cart";
+import { getCustomerFromToken } from "@/app/lib/auth/getCustomerFromToken";
 
 export async function GET() {
   const items = await getCartItems();
@@ -9,6 +10,10 @@ export async function GET() {
 
 // POST handler for Add to Cart (already used by AddToCartButton)
 export async function POST(req: Request) {
+  const token = req.headers.get("authorization")?.split(" ")[1] || null;
+  const customer = await getCustomerFromToken(token);
+  if (!customer) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+
   const { productId } = await req.json();
   if (!productId) return NextResponse.json({ error: "Missing productId" }, { status: 400 });
 

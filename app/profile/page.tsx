@@ -1,18 +1,48 @@
 // app/profile/page.tsx
-import { getCustomerFromSession } from "@/app/lib/customer-session";
-import db from "@/app/lib/db";
-import { redirect } from "next/navigation";
 
-export default async function ProfilePage() {
-  const customer = await getCustomerFromSession();
-  if (!customer) redirect("/login");
+'use client'
+import LoadingSpinner from "@/components/LoadingSpinner";
+import { useEffect, useState } from "react";
 
-  const [profile] = await db`
-    SELECT id, name, email, image_url FROM customers WHERE id = ${customer.id}
-  `;
+export default function ProfilePage(req: Request) {
+  // const headerList = headers();
+  // const token = (await headerList).get('authorization')?.split(' ')[1] || null;
+  // const customer = await getCustomerFromToken(token);
+  // console.log(localStorage.getItem('token'));
+  // if (!customer) redirect('/login');
+
+
+  // const [profile] = await db`
+  //   SELECT id, name, email, image_url FROM customers WHERE id = ${customer.id}
+  // `;
+
+  const [profile, setProfile] = useState<any>(null)
+
+  useEffect(() => {
+    const token = localStorage.getItem('token')
+    if (!token) {
+      window.location.href = '/login'
+      return
+    }
+
+    fetch('/api/profile', {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    })
+      .then(res => {
+        if (res.status === 401) {
+          window.location.href = '/login'
+        }
+        return res.json()
+      })
+      .then(data => setProfile(data))
+  }, [])
+
+  if (!profile) return <LoadingSpinner />
 
   return (
-    <div className="max-w-xl mx-auto mt-12 p-6 border rounded shadow">
+    <div className="max-w-xl mx-auto mt-12 p-6 border rounded shadow custom-bg-style">
       <h1 className="text-2xl font-semibold mb-6">Your Profile</h1>
       <div className="space-y-4">
         <div>

@@ -17,12 +17,11 @@ type Props = {
 
   
 export default async function CartItemsGrid({total, cartItems} : Props) {
-    // const cartItems = await getCartItems();
-    // const total = cartItems.reduce((sum, item) => sum + item.product.price * item.quantity, 0);
 
 return (
-<div className="max-w-5xl mx-auto p-6 space-y-10">
-      <h1 className="text-3xl font-bold">Order Items</h1>
+<div className="max-w-5xl mx-auto py-6 space-y-10">
+      {/* <h1 className="text-3xl font-bold">Order Items</h1> */}
+      <h1 className="font-bold">Order Items</h1>
         <>
           <div className="space-y-4">
             {cartItems.map((item) => (
